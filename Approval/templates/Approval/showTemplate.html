@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/weui.css' %}"/>
+    <link rel="stylesheet" type="text/css" herf="{% static 'example/example.css' %}">
+    
+    <title>showTemplate</title>
+</head>
+<body>
+    
+
+    <div class="weui-cells__title">
+        <h1 style="color:#6254b2; text-align: center; font-weight:bold;">审批模板</h1>
+    </div>
+    <div class="weui-cells">
+        {% for i in id_list %}
+        <a class="weui-cell weui-cell_access" href="{% url 'Approval:show' i.ID %}">
+            <div class="weui-cell__bd">
+                <p>{{ i.name}}</p>
+            </div>
+            <div class="weui-cell__ft">
+                点击填写
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

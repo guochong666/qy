@@ -1,0 +1,261 @@
+/*默认样式*/
+html, body, div, ul, li, h1, h2, h3, h4, h5, h6, p, dl, dt, dd, ol, form, input, textarea, th, td, select {
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    min-height: 100%;
+}
+
+body {
+    font-family: "Microsoft YaHei";
+    font-size: 0.3rem;
+    color: #333;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+img {
+    border: none;
+    vertical-align: middle;
+}
+
+a {
+    text-decoration: none;
+    color: #232323;
+}
+
+table {
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+input, textarea {
+    outline: none;
+    border: none;
+}
+
+textarea {
+    resize: none;
+    overflow: auto;
+}
+
+.clearfix {
+    zoom: 1;
+}
+
+.clearfix:after {
+    content: ".";
+    width: 0;
+    height: 0;
+    visibility: hidden;
+    display: block;
+    clear: both;
+    overflow: hidden;
+}
+
+.fl {
+    float: left
+}
+
+.fr {
+    float: right
+}
+
+.tl {
+    text-align: left;
+}
+
+.tc {
+    text-align: center
+}
+
+.tr {
+    text-align: right;
+}
+
+.ellipse {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.inline {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+.body_con{
+    width: 100%;
+    height:auto;
+    position: relative;
+    font-size: 0;
+}
+
+/* 顶部标题 */
+.body_top{
+    width: 100%;
+    height: 60px;
+    position:fixed;
+    top:0px;
+    z-index: 2;
+
+    background: #292e41;
+    color: #fff;
+    font-size: 24px;
+    line-height: 60px;
+    text-align: center;
+}
+
+/* 左侧菜单 */
+.body_left{
+    width:250px;
+    top:60px;
+    bottom: 0px;
+    left: 0px;
+    display: inline-block;
+    vertical-align: top;
+    background:#293152;
+    position: fixed;
+    font-size: 18px;
+    color: rgb(0, 0, 0);
+}
+
+/* 右侧内容 */
+.body_right{
+    width: calc(100% - 250px);
+    height: 100%;
+    top:60px;
+    bottom:0px;
+    right: 0px;
+    left:250px;
+    position: absolute;
+    z-index: 1;
+
+    display: inline-block;
+    vertical-align: top;
+    background-color: aliceblue;
+    font-size: 32px;
+    color: #999;
+    text-align: center;
+    line-height: 200px;
+}
+
+/* 左侧列表 */
+.body_left_list{
+    width: 100%;
+    min-height: 1rem;
+    position: relative;
+    background-color: #293152;
+}
+/* 左侧列表每个大类的样式 */
+.body_left_list >li{
+    width: 100%;
+    min-height: 1px;
+    overflow: hidden;
+    border-bottom: 1px solid #293152;
+    transition:all 0.5s;
+    max-height: 1500px;
+}
+/* 左侧列表每个大类标题 */
+.body_left_list >li >label{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    position: relative;
+    color:aliceblue;
+    font-size:16px;
+    background: #293152;
+    display: block;
+}
+.body_left_list >li >label >span{
+    padding: 0 20px;
+    width: 150px;
+    color: aliceblue;
+    font-size:16px;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.body_left_list >li >label >a{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+.body_left_list >li >label >i{
+    position: absolute;
+    top: 0;
+    right:25px;
+    font-size: 11px;
+}
+
+/* 左侧列表每个大类的小标题 */
+.body_left_list >li >ul{
+    width: 100%;
+    min-height: 1px;
+    position: relative;
+}
+.body_left_list >li >ul >li{
+    width: 100%;
+    max-height: 50px;
+    overflow: hidden;
+    transition: all 0.5s;
+}
+.body_left_list >li >ul >li:hover{
+    max-height: calc(200 * 8px);
+}
+.body_left_list >li >ul >li >label{
+    width: 100%;
+    height: 50px;
+    background:#293152;
+    line-height: 50px;
+    position: relative;
+    transition: all 0.5s;
+    display: block;
+}
+.body_left_list >li >ul >li:hover >label{
+    background: #293152;
+    border-left: 6px solid orange;
+}
+
+.body_left_list >li >ul >li:hover >label >i:nth-child(3){
+    transform: rotate(90deg);
+}
+.body_left_list >li >ul >li >label >i:nth-child(1){
+    padding-left:  30px;
+    font-size: 20px;
+    display: inline-block;
+    vertical-align: top;
+}
+.body_left_list >li >ul >li >label >span{
+   font-size: 15px;
+    color:aliceblue;
+    width: 90px;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.body_left_list >li >ul >li >label >a{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}

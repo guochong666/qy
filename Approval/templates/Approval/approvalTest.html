@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.2.2/vue.min.js"></script>
+<!--    <link rel="stylesheet" href="../static/css/weui.css"/>-->
+<!--    <link rel="stylesheet" herf="../static/example/example.css">-->
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/weui.css' %}"/>
+    <link rel="stylesheet" type="text/css" herf="{% static 'example/example.css' %}">
+<!--    <link rel="stylesheet" href="./example.css"/>-->
+    <title>审批页面-测试</title>
+    <script type="text/javascript">
+        function GetRequestParameters() {
+            //拆分url？后参数的函数
+            var url = location.search;
+            alert(url);
+            var theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1);
+                var strs = str.split("&"); //将所有参数拆分放入数组
+                for (var i = 0; i < strs.length; i++) {  //遍历参数数组
+                    theRequest[strs[i].split("=")[0]] = decodeURIComponent(strs[i].split("=")[1]);
+                }
+            }
+            return theRequest;
+        }
+
+        //将form表单的内容封装成标准json
+        function GetJson(){
+            var ans = {};
+            //ans.creator_userid = "";
+            //ans.template_id = "";
+            //ans.use_template_approver = "";
+            //ans.approver = [];
+            //ans.notifyer = [];
+            //ans.notify_type = [];
+            ans.apply_data = {};
+            //ans.summary_list = [];
+            //ajax重复访问模板接口，获取模板中元素数据
+            //组装json:ans.apply_data.contents[]
+            ans.apply_data.contents = [];
+            $.ajax({
+                    // url: 'http://121.195.153.139:8000/getTemplate/',
+                    url: '/Approval/getTemplate/',
+                    type: "GET",
+                    dataType: "json",
+                    async : false,
+                    contentType: "application/json;chartset=UTF-8",
+                    success: function (data) {
+                        $.each(data.data.template_content.controls, function(index,values){
+                            //遍历模板控件数组
+                            //values表示数组中的元素
+                            //property:模板控件属性 config:模板控件配置
+                            switch(values.property.control){
+                                case "Text":
+                                    var content = {};
+                                    content.control = "Text";
+                                    content.id = values.property.id;
+                                    content.title = [];
+                                    var i = {};
+                                    i.text = values.property.title[0].text;
+                                    i.lang = values.property.title[0].lang;
+                                    content.title.push(i);
+                                    content.value = {};
+                                    //content.value.text = "文本填写的内容-测试";
+                                    var s = "#" + values.property.id;
+                                    content.value.text = $(s).val();
+                                    //alert($(s).val());
+                                    console.log(s);
+                                    ans.apply_data.contents.push(content);
+                                    console.log(ans);
+                                    break;
+                                case "Selector":
+                                    if(values.config.selector.type == "single"){
+                                        //单选框
+                                        var content = {};
+                                        content.control = "Selector";
+                                        content.id = values.property.id;
+                                        content.title = [];
+                                        var i = {};
+                                        i.text = values.property.title[0].text;
+                                        i.lang = values.property.title[0].lang;
+                                        content.title.push(i);
+                                        content.value = {};
+                                        content.value.type = "single";
+                                        content.value.options = [];
+                                        var keys = {};
+                                        var s = "#" + values.property.id;
+                                        keys.key = $(s).val();
+                                        content.value.options.push(keys);
+                                        ans.apply_data.contents.push(content);
+                                    }else{
+                                        //复选框
+                                    }
+                                    break;
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert("传递参数模板获取失败（接口报错）");
+                    }
+                });
+            console.log(ans);
+            return ans.apply_data;////////////
+        }
+
+        //json通过ajax提交给服务器
+        function SubJson(){
+            json = GetJson();
+            console.log(json);
+            //alert("subJson");
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Approval/submitTemplate/",
+                // url: "http://127.0.0.1:8000/Approval/submitTemplate/",
+                //contentType : "application/json",
+                contentType : "application/x-www-form-urlencoded",
+                async:false,
+                //data: $('#dataForm').serialize(),
+                data: JSON.stringify(GetJson()),
+                success: function (result) {
+                    //window.location.href="./test.html";
+                    alert("审批提交成功");
+                }
+                // error : function() {
+                //     //window.location.href="./test.html";
+                //     alert("post error");
+                // }
+            });
+        }
+
+        //页面加载时渲染前端
+        $(function(){
+             //var GRP=GetRequestParameters();
+             //var access_token=GRP['access_token'];
+             //var template_id=GRP['template_id'];
+             //alert(access_token);
+             var errcode;
+             $(document).ready(function () {
+                $.ajax({
+                    // url: 'http://121.195.153.139:8000/getTemplate/',
+                    //url:'http://cistw.buct.edu.cn/template',
+                    url: '/Approval/getTemplate/',
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "chartset=UTF-8",
+                    success: function (data) {
+                        //console.log(data);
+                        $(".bottom_div").before("<h1 style=\"text-align:center;color:#6254b2;margin-bottom:25px\">" + data.data.template_names[0].text + "</h1>");
+                        $(".bottom_div").before("<div class=\"page\"><div class=\"page__bd\"><form action=\"\" method=\"post\">");
+                        var testid =  document.getElementById("testdiv");
+                        var testDiv = "";
+                        $.each(data.data.template_content.controls, function(index,values){
+
+                            //遍历模板控件数组
+                            //values表示数组中的元素
+                            //property:模板控件属性 config:模板控件配置
+                            //$(".test").before("<div ><p>" + values.property.control + "</p></div>");
+                            //alert(values.property.id);
+                            switch(values.property.control){
+                                case "Text":
+                                    //$(".bottom_div").before("<div ><input>" + values.property.control + "</input></div>");
+                                    testDiv = testDiv+"<div class=\"weui-cells__title\">"+ values.property.title[0].text +"</div>";
+                                    testDiv = testDiv+"<div class=\"weui-cells\"><div class=\"weui-cell\"><div class=\"weui-cell__bd\"><input class=\"weui-input\" type=\"text\" placeholder=\"请输入\" name = \"" + values.property.id + "\" id = \"" + values.property.id +"\"/></div></div></div>";
+                                    break;
+                                case "Selector":
+                                    testDiv = testDiv+"<div class=\"weui-cells weui-cells_radio\">";
+                                    testDiv = testDiv+"<div class=\"weui-cells__title\">" + values.property.title[0].text + "</div>";
+                                    if(values.config.selector.type == "single"){
+                                        //单选框
+                                        testDiv = testDiv  + "<div class=\"weui-cells\"><div class=\"weui-cell weui-cell_select\"><div class=\"weui-cell__bd\"><select class=\"weui-select\" name=\""+ values.property.id +"\" id=\"" + values.property.id + "\">";
+                                         $.each(values.config.selector.options,function(idx,value) {
+                                             testDiv = testDiv + "<option value=\"" + value.value[0].text + "\">" + value.value[0].text + "</option>";
+                                         });
+                                        testDiv = testDiv + "</select>"
+                                    }else{
+                                        //复选框
+                                    }
+                                    //$(".bottom_div").before("<div ><p>" + values.property.control + "</p></div>");
+                                    break;
+                            }
+                        });
+                        testDiv = testDiv+"</div></div>";
+                        testid.innerHTML = testDiv;
+                    },
+                    error: function () {
+                        alert("error");
+                    }
+                });
+            });
+        })
+
+        // 获取code
+        function getCode(){
+            //var url = 'code=qD_dYGV6jKMCKYIrPZnEBFu7RgWVhgAVkTh6akzpH8A&state=STATE';
+            var code = document.getElementById("code");
+            // $("#code").text(getQueryVariable("code"));-
+            var codeValue = getQueryVariable("code")
+            $.ajax({
+                type: "GET",
+                dataType: "text",
+                url: "/Approval/getUserId/",
+                data: { code: codeValue },
+                success: function(msg){
+                    // msgObj = eval("(" + msg + ")");
+                    // alert(msgObj.UserId);
+                }
+            });
+
+            console.log(getQueryVariable("code"))
+        }
+            
+        function getQueryVariable(variable)
+        {
+            // 获取url中?之后的字符串
+            var query = window.location.search.substring(1);     
+            console.log("query:",query)
+            var vars = query.split("&");
+            console.log("vars:",vars)
+            for (var i=0;i<vars.length;i++) {
+                var pair = vars[i].split("=");
+                if(pair[0] == variable){return pair[1];}
+            }
+            return(false);
+        }
+    </script>
+</head>
+
+<body onload="getCode()">
+<!--    <div><a>code:</a><span id="code"></span></div>-->
+    <div class="wrapper wrapper-content animated fadeInUp">
+        <div class="page">
+            <div class="page__bd">
+                <form  method="post" id="dataForm">
+                    {% csrf_token %}
+                    <!--        随便写的action            -->
+<!--                <h1 style="text-align:center;color:#6254b2;margin-bottom:25px">这里是审批测试页面</h1>-->
+                    <div class="bottom_div">
+                        <div class="page__bd page__bd_spacing">
+
+                            <div id="testdiv"></div>
+                            <button class="weui-btn weui-btn_primary" type="submit" name="submit_button" value="提交" onclick="SubJson()">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<!--    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>-->
+<!--    <script src="https://res.wx.qq.com/open/libs/weuijs/1.0.0/weui.min.js"></script>-->
+<!--    <script src="../static/example/example.js"></script>-->
+<!--    <script src="../static/example/zepto.js"></script>-->
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% load static %}
+    <title>login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/animate.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/hamburgers.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/select2.min.css' %}">
+
+	<link rel="stylesheet" type="text/css" href="{% static 'static_management/css/util.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'static_management/css/login.css' %}">
+</head>
+
+<body>
+
+    <div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-pic js-tilt" data-tilt>
+					<img src="{% static 'static_management/images/img-01.png' %}" alt="IMG">
+				</div>
+
+                <!-- 登录表单 -->
+				<form class="login100-form validate-form" action="/Management/loginRes/" method="post">
+					<span class="login100-form-title">
+						企业微信后台管理系统
+					</span>
+                    
+                    <!-- 解决跨域 -->
+                    <div><p>{{content}} {% csrf_token %}</p></div>
+
+                    <!-- 表单信息 -->
+					<div class="wrap-input100 validate-input" data-validate = "账号不能为空">
+                        <input class="input100" type="text" id="uid" name="uid" required="required" placeholder="账号">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-user" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate = "密码不能为空">
+						<input class="input100" type="password" id="pwd" name="pwd" required="required" placeholder="密码">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+					
+					<div class="container-login100-form-btn">
+						<!-- <button class="login100-form-btn" type="submit" value="登录" id="btn_login">
+							登录
+						</button> -->
+						<input class="login100-form-btn" type="submit" value="登录" id="user_login">
+                    </div>
+
+					<div class="text-center p-t-12" id="errorMsg" style="color:red;font-size:12px;">
+						{{ login_msg }}
+					</div>
+
+                </form>
+			</div>
+		</div>
+    </div>
+
+	<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'js/popper.js' %}"></script>
+	<script src="{% static 'js/select2.min.js' %}"></script>
+	<script src="{% static 'js/tilt.jquery.min.js' %}"></script>
+	<script >
+		$('.js-tilt').tilt({
+			scale: 1.1
+		})
+
+		$(function(){
+			$('#user_login').click(function(){
+				$('uid').reset;
+
+				csrf_token = $('input').val();
+				uid = $('#uid').val();
+				pwd = $('#pwd').val();
+				$.ajax({
+					'url':'/Management/loginRes/',
+					'type':'post',
+					'dataType':'JSON',
+					'data':{
+					'csrfmiddlewaretoken':csrf_token,
+					'uid':uid,
+					'pwd':pwd,
+					},
+					success:function(data){
+						console.log(data);
+					}
+				})
+			})
+		})
+	</script>
+	<link rel="stylesheet" type="text/css" href="{% static 'static_management/js/login.js' %}">
+
+</body>
+</html>

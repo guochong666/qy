@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>index</title>
+    <link rel="stylesheet" type="text/css" href="https://at.alicdn.com/t/font_1632750_204xwxiwzht.css?1583918713" />
+    <link rel="stylesheet" type="text/css" href="{% static 'static_management/css/index.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+<body>
+    <div class="body_con">
+
+        <!-- 导航栏 -->
+        <div class="body_top">
+            <div style="text-align: left; float:left; cursor: pointer;" onclick="window.location.href='../index';return false;">
+                &nbsp;&nbsp;&nbsp;企业微信后台管理
+            </div>
+            <div style="text-align: right; font-size: 14px; float: right;">
+                <!-- <a style="color: aliceblue;">{{ uid }}&nbsp;</a> -->
+                <button class="btn btn-default btn-sm" style="background-color:#292e41;color:aliceblue;padding-bottom: 7px;">
+                    {{ uid }}
+                </button>
+                <button value="退出" type="button" id="user_logout" onclick="logout()" class="btn btn-default btn-sm" style="background-color:#292e41;color:aliceblue;padding-bottom: 7px;">
+                    退出
+                </button>
+            </div>
+        </div>
+        
+        <!-- 左侧菜单 -->
+        <div class="body_left" id="left">
+            <ul class="body_left_list" id="appList">
+
+                <!-- 应用列表 -->
+                <li>
+                    <label>
+                        <span>应用列表</span>
+                        <i class="iconfont iconxiajiantou"></i>
+                        <a href="javascript:;"></a>
+                    </label>
+                    <ul>
+                        <li>
+                            <label>
+                                <i class="iconfont icondianzidaping" style="color: aliceblue;"></i>
+                                <span>审批</span>
+                                <a id="showApproval" href="javascript:;"></a>
+                            </label>
+
+                        </li>
+                        <li>
+                            <label>
+                                <i class="iconfont iconwenjuan" style="color: aliceblue;"></i>
+                                <span>信息采集</span>
+                                <a id="showInfo" href="javascript:;"></a>
+                            </label>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- 个人信息 -->
+                <li>
+                    <label>
+                        <span>个人信息</span>
+                        <i class="iconfont iconxiajiantou"></i>
+                        <a href="javascript:;"></a>
+                    </label>
+                    <ul>
+                        <li>
+                            <label>
+                                <i class="iconfont iconshezhi" style="color: aliceblue;"></i>
+                                <span>修改密码</span>
+                                <a href="javascript:;"></a>
+                            </label>
+                        </li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+
+        <!-- 右侧内容 -->
+        <div class="body_right" id="content">
+            <div class="container" style="margin-top: 10px; margin-left: auto; margin-right:auto; font-size: 16px;">
+
+                <!-- 模板操作 -->
+                <div style="line-height: 100px; margin-bottom: 15px; margin-top: 20px;">
+                    <form class="input-group" style=" float: left; width: 30%;" action="/Management/searchTemplate/" method="post">
+                        <input id="searchTempID" name="search_ID" type="text" class="form-control" Placeholder="请输入模板ID">
+                        <button class="btn btn-primary" type="button" id="searchTemp">搜索</button>
+                    </form>
+
+                    <div class="input-group" style="width: 11%; float: left;">
+                        <button class="btn btn-primary" type="button" style="margin-left: 20px;" onclick="location='../showApproval';return false;">查看全部模板</button>
+                    </div>
+
+                    <div class="input-group" style="width: 50%; float: left; margin-left: 20px;">
+                        <button class="btn btn-primary" type="button" style="margin-left: 20px;" data-toggle="modal" data-target="#addTemp">添加</button>
+                    </div>
+
+                    <!-- 搜索提示信息 -->
+                    <div class="input-group" style="line-height: 10px; margin-top: 10px; ">
+                        &nbsp;<p id="search_msg" style="font-size: 12px; color:red; display: none; margin-top: 10px;"></p>
+                    </div>
+                </div>
+
+                <!-- 模板信息 -->
+                <table class="table table-hover" style="width: 100%;">
+                    <thead style="font-weight:bold; line-height: 50px;">
+                        <td style="width: 500px;">TemplateID</td>
+                        <td style="width: 200px;">Name</td>
+                        <td style="width: 200px;">Message</td>
+                        <td style="width: 200px;">Action</td>
+                    </thead>
+                    {% for i in id_list %}
+                    <tr style="line-height: 20px;">
+                        <td>{{ i.ID }}</td>
+                        <td>{{ i.name }}</td>
+                        <td>{{ i.message }}</td>
+                        <td><a href="{% url 'Management:deleteTemplate' i.ID %}" onclick="return confirm('确定将此记录删除?')">Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- 添加模板 模态框 -->
+    <div class="modal fade" id="addTemp" tabindex="-1" role="dialog" aria-labelledby="addTempTitle" aria-hidden="true" 
+        style="height: 500px; margin-top: 100px; font-size: 16px;">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- 模态框头部 -->
+                <div class="modal-header">
+                    <h4 class="modal-title" id="addTempTitle">添加模板</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+
+                <form  method="post" action="/Management/addTemplate/">
+                    {% csrf_token %}
+
+                    <!-- 模态框主体 -->
+                    <div class="modal-body" style="color: black; line-height: 50px; margin-left: 65px;">
+                        <div class="input-group" style="width: 300px;">
+                            <label>模板名称</label>
+                            <input type="text" class="form-control" id="t_name" name="t_name" style="width:100px; margin-left: 10px;">
+                        </div>
+                        <div class="input-group" style="width: 300px;">
+                            <label>模板ID</label>
+                            <input type="text" class="form-control" id="t_ID" name="t_ID" style="width:100px; margin-left: 26px;">
+                        </div>
+                        <div class="input-group" style="width: 300px;">
+                            <label>模板内容</label>
+                            <input type="text" class="form-control" id="t_message" name="t_message" style="width:100px; margin-left: 10px;">
+                        </div>
+                    </div>
+
+                    <!-- 模态框底部 -->
+                    <div class="modal-footer" style="justify-content: center">
+                        <div style="line-height: 10px;">
+                            <!-- <button type="submit" class="btn btn-primary">添加</button> -->
+                            <input class="btn btn-primary" type="submit" value="添加" id="add">
+                        </div>
+                    </div>
+                    <div style="line-height: 10px;">
+                        <p id="add_msg" style="font-size: 12px; color:red; text-align: center;"></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'static_management/js/index.js' %}"></script>
+    <script src = "{% static 'js/bootstrap.min.js' %}"></script>
+
+    <script>
+        // 退出登录
+        function logout(){
+            $.ajax({
+                url:'/Management/logout/',
+                success:function(data){
+                    location.href = '/Management/login/'
+                }
+            })
+        }
+
+        // 菜单栏点击标题，右侧加载页面
+        $("#left #appList li ul li label a").click(function(){
+            var app_id = ($(this).attr('id'));
+            var app_path = app_id + ".html";
+            location.href = '../'+app_id+'/';
+        });
+
+        // 获取当前已有的模板
+        function getTemplateId(){
+            var templates = '{{ id_list|safe }}';
+            const regx = /<TemplateId:\s(\w+)/g;
+            let res = regx.exec(templates);
+            const t_id = [];
+            while(res) {
+                t_id.push(res[1]);
+                res = regx.exec(templates);
+            }
+            return t_id;
+        }
+
+        // 添加模板
+        $(function(){
+            $('#add').click(function(e){
+                csrf_token = $('input').val();
+                t_name = $('#t_name').val();
+                t_ID = $('#t_ID').val();
+                t_message = $('#t_message').val();
+                
+                // 获取当前已有的模板id
+                const t_id = getTemplateId();
+                
+                var add_btn = document.getElementById("add");
+                if(t_name == "" || t_ID == "" || t_message == ""){
+                    console.log("当前填写的模板信息不完整");
+                    $("#add_msg").text("请填写完整信息!");
+                    add_btn.type = "button";
+                }
+                else{
+                    let i = 0;
+                    while(i < t_id.length){
+                        if(t_ID == t_id[i]){                
+                            console.log("模板信息已存在!");  
+                            $("#add_msg").text("模板已存在!请勿重复添加!");
+                            add_btn.type = "button";
+                            break;
+                        }
+                        i++;
+                    }
+                    if(i == t_id.length){
+                        add_btn.type= "submit";     // 当前没有重复的模板ID
+                    }
+                }
+                
+            })
+            // return false;
+        })
+        
+        // 搜索模板
+        $(function(){
+            $("#searchTemp").click(function(e){
+                var search_ID = document.getElementById("searchTempID").value;
+                var search_btn = document.getElementById("searchTemp");
+
+                if(search_ID == ""){
+                    $("#search_msg").text("请输入要查询的模板ID!");
+                    search_btn.type = "button";
+                    $("#search_msg").show().delay(3000).hide(300);
+                }
+                else{
+                    search_btn.type = "submit";
+                }
+            })
+        })
+
+    </script>
+</body>
+</html>
